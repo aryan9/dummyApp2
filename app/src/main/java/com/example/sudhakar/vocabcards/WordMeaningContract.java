@@ -1,0 +1,21 @@
+package com.example.sudhakar.vocabcards;
+
+import android.provider.BaseColumns;
+
+/**
+ * Created by sudhakar on 28/12/16.
+ */
+
+public final class WordMeaningContract {
+    // To prevent someone from accidentally instantiating the contract class,
+    // make the constructor private.    private FeedReaderContract() {}
+    private WordMeaningContract() {};
+
+    /* Inner class that defines the table contents */
+    public static class FeedEntry implements BaseColumns {
+        public static final String TABLE_NAME = "WordMeanings";
+        public static final String COLUMN_NAME_WORD = "word";
+        public static final String COLUMN_NAME_JSON = "json";
+    }
+}
+
