@@ -125,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public WordMeaningDbHelper getActiveDb(){
+        return activeDb;
+    }
 
     private void showNotification() {
         // TODO Auto-generated method stub
@@ -140,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         Notification.Builder mBuilder =
                 new Notification.Builder(this)
-                        .setSmallIcon(R.drawable.ic_stat_library_books)
+                        .setSmallIcon(R.drawable.ic_search)
                         .setContentTitle("CoderoMusicPlayer")
                         .setContentText("PLayer0!");
 
@@ -301,8 +304,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String dictionaryEntries(String searchWord) {
         final String language = "en";
-        final String word = searchWord;
-        final String word_id = word.toLowerCase(); //word id is case sensitive and lowercase is required
+        //final String word = searchWord;
+        final String word_id = searchWord.toLowerCase(); //word id is case sensitive and lowercase is required
         return "https://od-api.oxforddictionaries.com:443/api/v1/entries/" + language + "/" + word_id;
     }
 }
