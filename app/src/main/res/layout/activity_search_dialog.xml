@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="400dp"
     android:fitsSystemWindows="true"
-    tools:context="com.example.sudhakar.vocabcards.searchDialogActivity"
+    tools:context="com.example.sudhakar.vocabcards.SearchDialogActivity"
     android:maxHeight="500dp"
     android:maxWidth="400dp">
 
@@ -37,5 +37,15 @@
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:hint="Word" />
+
+    <EditText
+        android:layout_width="301dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editTextDialogRemarks"
+        android:hint="Remarks"
+        android:layout_marginLeft="10dp"
+        android:textSize="14sp" />
 
 </android.support.design.widget.CoordinatorLayout>
