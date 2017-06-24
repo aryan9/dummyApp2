@@ -14,13 +14,17 @@ public class WordMeaningDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + WordMeaningContract.FeedEntry.TABLE_NAME + " (" +
                     WordMeaningContract.FeedEntry._ID + " INTEGER PRIMARY KEY," +
                     WordMeaningContract.FeedEntry.COLUMN_NAME_WORD + " TEXT," +
-                    WordMeaningContract.FeedEntry.COLUMN_NAME_JSON + " TEXT)";
+                    WordMeaningContract.FeedEntry.COLUMN_NAME_JSON + " TEXT," +
+                    WordMeaningContract.FeedEntry.COLUMN_NAME_LASTSEARCHED + " TEXT," +
+                    WordMeaningContract.FeedEntry.COLUMN_NAME_SEARCHCOUNT + " TEXT," +
+                    WordMeaningContract.FeedEntry.COLUMN_NAME_REVISECOUNT + " TEXT," +
+                    WordMeaningContract.FeedEntry.COLUMN_NAME_SESSION + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + WordMeaningContract.FeedEntry.TABLE_NAME;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "WordMeanings.db";
 
     public WordMeaningDbHelper(Context context) {

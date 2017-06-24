@@ -5,106 +5,109 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button buttonSearchWord;
-    private TextView tvWordMeaning;
-    private EditText etWordToSearch;
-    private String jsonResponse;
-    private WordMeaningDbHelper WordMeaningDb;
-    private SearchHistoryDbHelper SearchHistoryDb;
-    private AlertDialog.Builder alertDialogBuilder;
+    private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
 
+    /*
+    For the settings drawer
+     */
+    private String[] mPlanetTitles = {"Mercury", "Venus", "Earth", "Mars"};
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+         /*
+        Setup the drawer.
+         */
+        //mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        //mPlanetTitles = {"",""};
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//
+//        // Set the adapter for the list view
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mPlanetTitles));
+//        // Set the list's click listener
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        //getApplicationContext().deleteDatabase("WordMeanings.db");
+        //Check if the application has draw over other apps permission or not?
+        //This permission is by default available for API<23. But for API > 23
+        //you have to ask for the permission in runtime.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
 
-        WordMeaningDb = new WordMeaningDbHelper(getApplicationContext());
-        SearchHistoryDb = new SearchHistoryDbHelper(getApplicationContext());
-
-        tvWordMeaning = (TextView) findViewById(R.id.textViewWordMeaning);
-        etWordToSearch = (EditText)findViewById(R.id.editTextWordToSearch);
-        buttonSearchWord = (Button) findViewById(R.id.buttonSearchWord);
-
-        alertDialogBuilder = new AlertDialog.Builder(this);
+            //If the draw over permission is not available open the settings screen
+            //to grant the permission.
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+        } else {
+            initializeView();
+        }
 
         showNotification();
+    }
 
-        buttonSearchWord.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        String word = etWordToSearch.getText().toString();
-                        WordMeaningSearchHelper searchSpace = new WordMeaningSearchHelper(WordMeaningDb,SearchHistoryDb);
-                        String meaning = searchSpace.getMeaning(word);
-                        //System.out.print(meaning);
-
-                        if(!searchSpace.errorFlag){
-                            DictionaryJSONParser wordParser = new DictionaryJSONParser(meaning);
-                            wordParser.ParseJSON();
-                            String textOut = "";
-                            textOut += "Definitions : " + wordParser.numDefinitions;
-                            textOut += "\n";
-                            //System.out.println("Definitions : " + wordParser.numDefinitions);
-                            for (int i = 0 ; i < wordParser.numDefinitions ; i++){
-                                if(wordParser.senses.get(i).definition != null) {
-                                    //System.out.println(wordParser.senses.get(i).definition);
-                                    textOut += wordParser.senses.get(i).definition;
-                                    textOut += "\n";
-                                }
-                            }
-                            UpdateUITask uiUpdater = new UpdateUITask();
-                            uiUpdater.execute(textOut);
-                            //System.out.print(textOut);
-                        }
-                        else{
-                            //System.out.print(searchSpace.errorInfo);
-                        }
-                    }
-                }).start();
-
-//                showNotification();
-//
-//                FireMissilesDialogFragment dialog = new FireMissilesDialogFragment();
-//                dialog.show(getSupportFragmentManager(),"missiles");
-
-
-
+    /**
+     * Set and initialize the view elements.
+     */
+    private void initializeView() {
+        findViewById(R.id.buttonSearchWord).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Do Something","Did Something");
+                startService(new Intent(MainActivity.this, FloatingBubbleService.class));
+                finish();
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
+
+            //Check if the permission is granted or not.
+            if (resultCode == RESULT_OK) {
+                initializeView();
+            } else { //Permission is not available
+                Toast.makeText(this,
+                        "Draw over other app permission not available. Closing the application",
+                        Toast.LENGTH_SHORT).show();
+
+                finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -127,22 +130,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public WordMeaningDbHelper getWordMeaningDb(){
-        return WordMeaningDb;
-    }
 
     private void showNotification() {
-        // TODO Auto-generated method stub
-
-//        NotificationManager nMN = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        Notification n  = new Notification.Builder(this)
-//                .setContentTitle("Whip And Weep")
-//                .setContentText("Whip is On!")
-//                .setSmallIcon(R.drawable.ic_stat_library_books)
-//                .build();
-//        n.flags = Notification.FLAG_ONGOING_EVENT;
-//        nMN.notify(123, n);
-
         Notification.Builder mBuilder =
                 new Notification.Builder(this)
                         .setSmallIcon(R.drawable.ic_search)
@@ -168,61 +157,27 @@ public class MainActivity extends AppCompatActivity {
         mNotificationManager.notify(1, n);
     }
 
-    public void CreateDialogBox(){
-
-        alertDialogBuilder.setMessage("Are you sure, You wanted to make decision");
-        alertDialogBuilder.setPositiveButton("yes",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        Toast.makeText(MainActivity.this,"You clicked yes button",Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String ret = selectItem(position);
+            Snackbar.make(view, ret, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
     }
 
-
-        /*
-    Creating a custom JSON string parser for the responses obtained from
-    oxforddictionaries.com.
-     */
-
-    private String dictionaryEntries(String searchWord) {
-        final String language = "en";
-        //final String word = searchWord;
-        final String word_id = searchWord.toLowerCase(); //word id is case sensitive and lowercase is required
-        return "https://od-api.oxforddictionaries.com:443/api/v1/entries/" + language + "/" + word_id;
+    /** Swaps fragments in the main content view */
+    private String selectItem(int position) {
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        //setTitle(mPlanetTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        return mPlanetTitles[position];
     }
 
-    private class UpdateUITask extends AsyncTask<String, Integer, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            try {
-
-                return params[0];
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                return e.toString();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            tvWordMeaning.setText(result);
-        }
+    @Override
+    public void setTitle(CharSequence title) {
+        //String mTitle = title;
+        //getActionBar().setTitle(title);
     }
 }

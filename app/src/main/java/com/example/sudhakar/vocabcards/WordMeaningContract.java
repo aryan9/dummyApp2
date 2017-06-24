@@ -16,6 +16,10 @@ public final class WordMeaningContract {
         public static final String TABLE_NAME = "WordMeanings";
         public static final String COLUMN_NAME_WORD = "word";
         public static final String COLUMN_NAME_JSON = "json";
+        public static final String COLUMN_NAME_LASTSEARCHED = "lastSearched";
+        public static final String COLUMN_NAME_SEARCHCOUNT = "searchCount";
+        public static final String COLUMN_NAME_REVISECOUNT = "reviseCount";
+        public static final String COLUMN_NAME_SESSION = "session";
     }
 }
 
