@@ -81,13 +81,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 }
             }
             textOut = textOut.substring(0,textOut.length()-1);
-            ((TextView) holder.linearLayout.getChildAt(1)).setText(textOut);
+
+            //
+            // TODO: Sometimes the view is null when scrolling too fast. Find out the reason why.
+            // For now, the view is not updated if its null.
+            // Effect: Sometimes the examples might get skipped.
+            //
+            if(holder.linearLayout.getChildAt(1) != null)
+                ((TextView) holder.linearLayout.getChildAt(1)).setText(textOut);
         }
         /*
         Otherwise remove the view from the layout altogether.
          */
         else{
-            holder.linearLayout.removeViewAt(1);
+            //
+            // TODO: Sometimes the view is null when scrolling too fast. Find out the reason why.
+            // For now, the view is not updated if its null.
+            //
+            if(holder.linearLayout.getChildAt(1) != null)
+                holder.linearLayout.removeViewAt(1);
         }
 
 

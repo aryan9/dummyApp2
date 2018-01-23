@@ -32,11 +32,12 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
+    public static final String EXTRA_MESSAGE = "MainActivity.MESSAGE";
 
     /*
     For the settings drawer
      */
-    private String[] mPlanetTitles = {"Mercury", "Venus", "Earth", "Mars"};
+    private String[] mPlanetTitles = {"Mercury", "Venus", "Revise", "Mars"};
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
@@ -50,14 +51,14 @@ public class MainActivity extends AppCompatActivity {
          */
         //mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         //mPlanetTitles = {"",""};
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-//
-//        // Set the adapter for the list view
-//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//                R.layout.drawer_list_item, mPlanetTitles));
-//        // Set the list's click listener
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         //Check if the application has draw over other apps permission or not?
         //This permission is by default available for API<23. But for API > 23
@@ -161,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String ret = selectItem(position);
+
+            if(ret.equalsIgnoreCase("Revise"))
+                StartRevisionActivity();
+
+
             Snackbar.make(view, ret, Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
@@ -180,4 +186,12 @@ public class MainActivity extends AppCompatActivity {
         //String mTitle = title;
         //getActionBar().setTitle(title);
     }
+
+    private void StartRevisionActivity(){
+        Intent intent = new Intent(this, RevisionHome.class);
+        String message = "Dummy";
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
 }
+

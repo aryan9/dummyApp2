@@ -105,6 +105,10 @@ public class WordMeaningSearchHelper {
 
                 Cursor cursor;
 
+                //
+                // Proceed according to the intent of invoking this
+                // async task.
+                //
                 switch(Integer.parseInt(params[0])){
 
                     /*
@@ -301,7 +305,7 @@ public class WordMeaningSearchHelper {
             catch (Exception e) {
                 e.printStackTrace();
                 errorFlag = true;
-                errorInfo = "Error while storing word in DB.";
+                errorInfo = "Error while storing word in Word-Meaning DB.";
                 return e.toString();
             }
         }
@@ -408,7 +412,7 @@ public class WordMeaningSearchHelper {
                         TODO: Find when such a scenario may occur and how to mitigate it.
                          */
                         errorFlag = true;
-                        errorInfo = "Multiple entries found in DB";
+                        errorInfo = "Multiple entries found in Word-Meaning DB";
 
                 }
                 return retVal;
@@ -416,7 +420,7 @@ public class WordMeaningSearchHelper {
             } catch (Exception e) {
                 e.printStackTrace();
                 errorFlag = true;
-                errorInfo = "Error in reading DB";
+                errorInfo = "Error in reading Word-Meaning DB";
                 return e.toString();
             }
         }
